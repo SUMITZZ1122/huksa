@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HUKSA Expert Profile Generator · by Infollion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--gold:#c9a227;--gold-dark:#8b6914;--gold-light:#e8d5a3;--bg:#0c0c16;--border:rgba(200,162,50,0.2);--text:#e8e0cc;--muted:#8880aa;--dim:#5a5478;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.shell{min-height:100vh;background:radial-gradient(ellipse 100% 60% at 50% -10%,#1c1630 0%,#0c0c16 65%);display:flex;flex-direction:column;}
+nav{display:flex;justify-content:space-between;align-items:center;padding:18px 44px;border-bottom:1px solid rgba(200,162,50,0.12);position:sticky;top:0;background:rgba(12,12,22,0.9);backdrop-filter:blur(14px);z-index:100;}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold);}
+.nav-brand small{display:block;font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-dark);margin-top:-1px;}
+.nav-pill{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-dark);border:1px solid rgba(200,162,50,0.25);padding:5px 14px;border-radius:20px;}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;}
+.input-wrap{width:100%;max-width:660px;}
+.eyebrow{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;text-align:center;margin-bottom:14px;}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,5vw,50px);font-weight:700;color:#f0e8d0;line-height:1.1;text-align:center;margin-bottom:10px;}
+h1 em{color:var(--gold);font-style:normal;}
+.sub{font-size:14px;color:var(--muted);text-align:center;margin-bottom:32px;line-height:1.65;max-width:460px;margin-left:auto;margin-right:auto;}
+.paste-card{background:rgba(255,255,255,0.035);border:1.5px solid var(--border);border-radius:16px;padding:28px 30px;}
+.paste-label{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#9990b8;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.paste-label::after{content:'';flex:1;height:1px;background:rgba(200,162,50,0.15);}
+textarea{width:100%;min-height:240px;resize:vertical;background:rgba(255,255,255,0.04);border:1px solid rgba(200,162,50,0.18);border-radius:10px;padding:16px 18px;color:#e0d8c8;font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.65;outline:none;transition:border-color .2s,box-shadow .2s;}
+textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,162,50,0.1);}
+textarea::placeholder{color:#4a4468;}
+.hint{font-size:11.5px;color:var(--dim);margin-top:10px;line-height:1.6;}
+.hint strong{color:#8878a8;}
+.error-msg{background:rgba(220,60,60,0.1);border:1px solid rgba(200,80,80,0.3);color:#f08888;font-size:12.5px;padding:10px 14px;border-radius:8px;margin-top:14px;display:none;}
+.btn-gen{margin-top:20px;width:100%;padding:15px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;border-radius:10px;color:#0c0c16;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:opacity .2s,transform .15s;}
+.btn-gen:hover{opacity:.85;transform:translateY(-1px);}
+.loading-wrap{text-align:center;display:none;}
+.spinner{width:50px;height:50px;border:3px solid rgba(200,162,50,0.12);border-top-color:var(--gold);border-radius:50%;animation:spin .85s linear infinite;margin:0 auto 22px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.load-title{font-family:'Cormorant Garamond',serif;font-size:26px;color:#f0e8d0;margin-bottom:8px;}
+.load-sub{font-size:13px;color:#6660a0;margin-bottom:28px;}
+.load-steps{display:flex;flex-direction:column;gap:8px;align-items:center;}
+.load-step{font-size:12px;color:#9990b8;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+.preview-wrap{width:100%;max-width:860px;display:none;}
+.preview-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:12px;flex-wrap:wrap;}
+.preview-info .lbl{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#7770a0;}
+.preview-info .pname{font-family:'Cormorant Garamond',serif;font-size:22px;color:#f0e8d0;margin-top:2px;}
+.toolbar-btns{display:flex;gap:10px;}
+.btn-back{padding:10px 22px;background:transparent;border:1.5px solid rgba(200,162,50,0.3);border-radius:8px;color:var(--gold);font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-back:hover{background:rgba(200,162,50,0.08);}
+.btn-dl{padding:11px 28px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));border:none;border-radius:8px;color:#0c0c16;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;}
+.btn-dl:hover{opacity:.85;}
+.profile-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 28px 80px rgba(0,0,0,.55);color:#1a1a2e;}
+.ph{background:linear-gradient(135deg,#1a1a2e,#2c2848);padding:30px 34px 26px;display:flex;gap:22px;align-items:flex-start;position:relative;}
+.ph-brand{position:absolute;top:20px;right:26px;text-align:right;font-family:'Cormorant Garamond',serif;font-size:13.5px;font-weight:700;color:var(--gold);line-height:1.3;}
+.ph-brand small{display:block;font-family:'DM Sans',sans-serif;font-size:8.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-dark);}
+.ph-photo-ph{width:84px;height:84px;border-radius:8px;background:linear-gradient(135deg,#8b6914,#c9a227);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:700;color:#fff;border:2.5px solid var(--gold);flex-shrink:0;}
+.ph-photo{width:84px;height:84px;border-radius:8px;object-fit:cover;border:2.5px solid var(--gold);flex-shrink:0;}
+.ph-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:#f0e8d0;margin-bottom:3px;}
+.ph-desig{font-size:12.5px;font-weight:600;color:var(--gold);margin-bottom:8px;}
+.ph-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:11px;color:#a0a0c0;}
+.ph-loc{font-size:11px;color:#7878a0;margin-top:5px;}
+.pb{padding:26px 34px;}
+.ps{margin-bottom:20px;}
+.ps-t{font-family:'Cormorant Garamond',serif;font-size:13.5px;font-weight:700;color:#8b6914;text-transform:uppercase;letter-spacing:.07em;padding-bottom:5px;border-bottom:1.5px solid #e8d5a3;margin-bottom:10px;}
+.ps-sum{font-size:12.5px;color:#2a2a3e;line-height:1.72;}
+.comp-wrap,.train-wrap{display:flex;flex-wrap:wrap;gap:7px;}
+.ctag{background:#f7f0de;border:1px solid #d4b870;color:#7a5c0e;font-size:11px;font-weight:600;padding:4px 12px;border-radius:4px;}
+.ttag{background:#1a1a2e;color:#e8d5a3;font-size:11px;font-weight:600;padding:4px 12px;border-radius:4px;}
+.exp-b{margin-bottom:12px;}
+.exp-h{display:flex;align-items:baseline;flex-wrap:wrap;margin-bottom:3px;}
+.er{font-weight:700;font-size:12.5px;}.edot{color:#c9a227;margin:0 6px;}.eco{font-weight:600;font-size:12.5px;color:#8b6914;}.eyr{margin-left:auto;font-size:11px;color:#999;font-style:italic;}
+ul.bul,ul.al{padding-left:18px;}ul.bul li,ul.al li{font-size:12px;color:#333;margin-bottom:3px;line-height:1.55;}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.pf{background:#f7f3e8;padding:12px 34px;display:flex;justify-content:space-between;font-size:10px;color:#b0a080;border-top:1px solid #e0d0aa;}
+.pdl-note{text-align:center;margin-top:18px;font-size:11.5px;color:var(--dim);line-height:1.7;}
+.pdl-note strong{color:var(--gold);}
+@media(max-width:600px){nav{padding:16px 20px;}.ph{flex-direction:column;}.ph-brand{position:static;margin-bottom:10px;}.pb{padding:20px;}.two{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav>
+    <div class="nav-brand">HUKSA <small>by Infollion</small></div>
+    <div class="nav-pill">Expert Profile Generator</div>
+  </nav>
+  <main>
+    <!-- INPUT -->
+    <div id="view-input" class="input-wrap">
+      <div class="eyebrow">HUKSA by Infollion</div>
+      <h1>Paste LinkedIn.<br/>Get an <em>Expert Profile.</em></h1>
+      <p class="sub">Copy your entire LinkedIn profile and paste below — instantly transformed into a premium branded expert dossier.</p>
+      <div class="paste-card">
+        <div class="paste-label">Paste Your LinkedIn Profile</div>
+        <textarea id="raw-input" placeholder="Go to your LinkedIn profile → Select All (Ctrl+A) → Copy (Ctrl+C) → Paste here.
+
+The more you paste — name, headline, about, experience, education, skills — the richer your expert profile will be."></textarea>
+        <div class="hint"><strong>Tip:</strong> Press <strong>Ctrl+A</strong> then <strong>Ctrl+C</strong> on your LinkedIn page, then paste above.</div>
+        <div class="error-msg" id="error-msg"></div>
+        <button class="btn-gen" id="btn-gen">✦ Generate Expert Profile</button>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-wrap" id="view-loading">
+      <div class="spinner"></div>
+      <div class="load-title">Crafting Your Expert Profile</div>
+      <div class="load-sub">AI is building your premium HUKSA dossier…</div>
+      <div class="load-steps">
+        <div class="load-step" style="animation-delay:0s">Parsing profile content…</div>
+        <div class="load-step" style="animation-delay:0.45s">Extracting leadership narrative…</div>
+        <div class="load-step" style="animation-delay:0.9s">Crafting executive summary…</div>
+        <div class="load-step" style="animation-delay:1.35s">Mapping competencies…</div>
+        <div class="load-step" style="animation-delay:1.8s">Building expert dossier…</div>
+        <div class="load-step" style="animation-delay:2.25s">Finalising HUKSA profile…</div>
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="preview-wrap" id="view-preview">
+      <div class="preview-toolbar">
+        <div class="preview-info">
+          <div class="lbl">Expert Profile Ready</div>
+          <div class="pname" id="preview-name"></div>
+        </div>
+        <div class="toolbar-btns">
+          <button class="btn-back" id="btn-back">← New Profile</button>
+          <button class="btn-dl" id="btn-dl">↓ Download PDF</button>
+        </div>
+      </div>
+      <div class="profile-card" id="profile-card"></div>
+      <div class="pdl-note">Click <strong>Download PDF</strong> → print dialog → select <strong>"Save as PDF"</strong></div>
+    </div>
+  </main>
+</div>
+
+<script>
+const API_KEY = "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";
+const BRAND = "HUKSA by Infollion";
+let currentProfile = null;
+
+function show(id) {
+  ["view-input","view-loading","view-preview"].forEach(v => {
+    const el = document.getElementById(v);
+    if(v === id) { el.style.display = v === "view-input" ? "block" : v === "view-loading" ? "block" : "block"; }
+    else el.style.display = "none";
+  });
+}
+
+function showError(msg) {
+  const el = document.getElementById("error-msg");
+  el.textContent = "⚠ " + msg;
+  el.style.display = "block";
+}
+
+document.getElementById("btn-gen").addEventListener("click", async () => {
+  const raw = document.getElementById("raw-input").value.trim();
+  if(raw.length < 80) { showError("Please paste more content from your LinkedIn profile."); return; }
+  document.getElementById("error-msg").style.display = "none";
+  show("view-loading");
+  try {
+    const profile = await generateProfile(raw);
+    currentProfile = profile;
+    renderPreview(profile);
+    show("view-preview");
+  } catch(e) {
+    showError(e.message);
+    show("view-input");
+  }
+});
+
+document.getElementById("btn-back").addEventListener("click", () => { currentProfile = null; show("view-input"); });
+document.getElementById("btn-dl").addEventListener("click", () => {
+  if(!currentProfile) return;
+  const w = window.open("","_blank");
+  w.document.write(buildPrintHTML(currentProfile));
+  w.document.close();
+});
+
+async function generateProfile(rawText) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-api-key": API_KEY, "anthropic-version": "2023-06-01" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514", max_tokens: 3000,
+      system: "You are an expert creating premium corporate expert/trainer profiles for HUKSA by Infollion. Convert raw LinkedIn text into a detailed narrative-driven expert dossier. Return ONLY valid JSON — no markdown, no explanation.",
+      messages: [{ role: "user", content: `Convert this LinkedIn profile into expert profile JSON.\n\nLINKEDIN TEXT:\n${rawText}\n\nReturn EXACTLY this JSON (no markdown):\n{"name":"Full Name","designation":"Title | Company","industry":"short phrase","experience_years":"XX+","topAchievement":"short achievement","location":"City Country","executiveSummary":"5-7 sentence narrative overview highlighting leadership expertise innovation advisory and training potential","competencies":["8-12 items"],"experience":[{"role":"Title","company":"Co","years":"YYYY-YYYY","bullets":["3-5 achievement bullets"]}],"trainingAreas":["6-10 topic tags"],"trainingNarrative":"2-3 sentences on training philosophy","achievements":["6-10 measurable items"],"education":[{"degree":"Degree","institution":"University","year":"YYYY"}],"publications":["items"],"awards":["items"]}` }]
+    })
+  });
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error?.message || "API error");
+  const text = data.content.map(b=>b.text||"").join("").trim().replace(/```json|```/g,"").trim();
+  return JSON.parse(text);
+}
+
+function renderPreview(p) {
+  document.getElementById("preview-name").textContent = p.name || "";
+  const photoHTML = p.photoUrl ? `<img src="${p.photoUrl}" class="ph-photo" alt=""/>` : `<div class="ph-photo-ph">${(p.name||"?")[0]}</div>`;
+  let html = `<div class="ph"><div class="ph-brand">${BRAND}<small>Expert Profile</small></div>${photoHTML}<div><div class="ph-name">${p.name||""}</div><div class="ph-desig">${p.designation||""}</div><div class="ph-meta">${p.industry?`<span>📌 ${p.industry}</span>`:""}${p.experience_years?`<span>⏱ ${p.experience_years} Years</span>`:""}${p.topAchievement?`<span>🏆 ${p.topAchievement}</span>`:""}</div>${p.location?`<div class="ph-loc">📍 ${p.location}</div>`:""}</div></div><div class="pb">`;
+  if(p.executiveSummary) html+=`<div class="ps"><div class="ps-t">Executive Summary</div><div class="ps-sum">${p.executiveSummary}</div></div>`;
+  if(p.competencies?.length) html+=`<div class="ps"><div class="ps-t">Core Competencies</div><div class="comp-wrap">${p.competencies.map(c=>`<span class="ctag">${c}</span>`).join("")}</div></div>`;
+  if(p.experience?.length){html+=`<div class="ps"><div class="ps-t">Leadership Experience</div>`;p.experience.forEach(e=>{html+=`<div class="exp-b"><div class="exp-h"><span class="er">${e.role}</span><span class="edot">·</span><span class="eco">${e.company}</span><span class="eyr">${e.years}</span></div>`;if(e.bullets?.length)html+=`<ul class="bul">${e.bullets.map(b=>`<li>${b}</li>`).join("")}</ul>`;html+=`</div>`;});html+=`</div>`;}
+  if(p.trainingAreas?.length){html+=`<div class="ps"><div class="ps-t">Training & Advisory Expertise</div><div class="train-wrap">${p.trainingAreas.map(t=>`<span class="ttag">${t}</span>`).join("")}</div>`;if(p.trainingNarrative)html+=`<p style="margin-top:10px;font-size:12.5px;color:#333;line-height:1.65;">${p.trainingNarrative}</p>`;html+=`</div>`;}
+  if(p.achievements?.length) html+=`<div class="ps"><div class="ps-t">Key Achievements</div><ul class="al">${p.achievements.map(a=>`<li>${a}</li>`).join("")}</ul></div>`;
+  html+=`<div class="two">`;
+  if(p.education?.length) html+=`<div class="ps"><div class="ps-t">Education</div><ul class="al">${p.education.map(e=>`<li><strong>${e.degree}</strong> — ${e.institution}${e.year?`, ${e.year}`:""}</li>`).join("")}</ul></div>`;
+  if(p.awards?.length) html+=`<div class="ps"><div class="ps-t">Awards & Recognition</div><ul class="al">${p.awards.map(a=>`<li>${a}</li>`).join("")}</ul></div>`;
+  html+=`</div>`;
+  if(p.publications?.length) html+=`<div class="ps"><div class="ps-t">Publications & Research</div><ul class="al">${p.publications.map(x=>`<li>${x}</li>`).join("")}</ul></div>`;
+  html+=`</div><div class="pf"><span>${BRAND} · Confidential Expert Dossier</span><span>Expert Profile – ${p.name}</span></div>`;
+  document.getElementById("profile-card").innerHTML = html;
+}
+
+function buildPrintHTML(p) {
+  const exp=(p.experience||[]).map(e=>`<div class="exp-block"><div class="exp-head"><span class="exp-role">${e.role||""}</span><span class="dot"> · </span><span class="exp-co">${e.company||""}</span><span class="exp-yr">${e.years||""}</span></div><ul>${(e.bullets||[]).map(b=>`<li>${b}</li>`).join("")}</ul></div>`).join("");
+  const comps=(p.competencies||[]).map(c=>`<span class="tag">${c}</span>`).join("");
+  const tr=(p.trainingAreas||[]).map(t=>`<span class="ttag">${t}</span>`).join("");
+  const ach=(p.achievements||[]).map(a=>`<li>${a}</li>`).join("");
+  const edu=(p.education||[]).map(e=>`<li><strong>${e.degree}</strong> — ${e.institution}${e.year?", "+e.year:""}</li>`).join("");
+  const pub=(p.publications||[]).map(x=>`<li>${x}</li>`).join("");
+  const aw=(p.awards||[]).map(x=>`<li>${x}</li>`).join("");
+  const photo=p.photoUrl?`<img src="${p.photoUrl}" class="photo"/>`:`<div class="photo-ph">${(p.name||"?")[0]}</div>`;
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Expert Profile – ${p.name}</title><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet"/><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Source Sans 3',sans-serif;background:#fff;color:#1a1a2e;font-size:10.5pt;line-height:1.55;}.page{width:210mm;min-height:297mm;margin:0 auto;padding:14mm 16mm;position:relative;}.brand{position:absolute;top:14mm;right:16mm;font-family:'Playfair Display',serif;font-size:9pt;font-weight:700;color:#8b6914;text-align:right;line-height:1.3;}.brand small{display:block;font-size:7pt;letter-spacing:.15em;text-transform:uppercase;color:#a07c2a;}.hdr{display:flex;gap:16px;align-items:flex-start;padding-bottom:12px;border-bottom:2.5px solid #8b6914;}.photo{width:80px;height:80px;border-radius:6px;object-fit:cover;flex-shrink:0;}.photo-ph{width:80px;height:80px;border-radius:6px;background:linear-gradient(135deg,#8b6914,#c9a227);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:28pt;font-weight:700;color:#fff;flex-shrink:0;}.hdr-info{flex:1;padding-right:100px;}.name{font-family:'Playfair Display',serif;font-size:22pt;font-weight:700;color:#1a1a2e;line-height:1.1;margin-bottom:3px;}.desig{font-size:11pt;font-weight:600;color:#8b6914;margin-bottom:5px;}.meta{display:flex;flex-wrap:wrap;gap:14px;font-size:8.5pt;color:#555;margin-top:4px;}.loc{font-size:9pt;color:#666;margin-top:4px;}.sec{margin-top:13px;}.sec-t{font-family:'Playfair Display',serif;font-size:11.5pt;font-weight:700;color:#8b6914;text-transform:uppercase;letter-spacing:.06em;padding-bottom:3px;border-bottom:1px solid #e8d5a3;margin-bottom:8px;}.summary{font-size:10pt;line-height:1.68;color:#2a2a3e;text-align:justify;}.tags{display:flex;flex-wrap:wrap;gap:6px;}.tag{background:#f7f0de;border:1px solid #d4b870;color:#7a5c0e;font-size:8.5pt;font-weight:600;padding:3px 9px;border-radius:3px;}.ttag{background:#1a1a2e;color:#e8d5a3;font-size:8.5pt;font-weight:600;padding:4px 10px;border-radius:3px;}.exp-block{margin-bottom:10px;}.exp-head{display:flex;align-items:baseline;flex-wrap:wrap;margin-bottom:3px;}.exp-role{font-weight:700;font-size:10pt;}.dot{color:#8b6914;margin:0 5px;}.exp-co{font-weight:600;color:#8b6914;font-size:10pt;}.exp-yr{margin-left:auto;font-size:8.5pt;color:#888;font-style:italic;}ul{padding-left:16px;}li{font-size:9.5pt;color:#333;margin-bottom:2.5px;line-height:1.5;}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}.footer{margin-top:18px;padding-top:8px;border-top:1px solid #e0d0aa;display:flex;justify-content:space-between;font-size:7.5pt;color:#999;}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style></head><body><div class="page"><div class="brand">${BRAND}<small>Expert Profile</small></div><div class="hdr">${photo}<div class="hdr-info"><div class="name">${p.name||""}</div><div class="desig">${p.designation||""}</div><div class="meta">${p.industry?`<span>📌 ${p.industry}</span>`:""}${p.experience_years?`<span>⏱ ${p.experience_years} Yrs</span>`:""}${p.topAchievement?`<span>🏆 ${p.topAchievement}</span>`:""}</div>${p.location?`<div class="loc">📍 ${p.location}</div>`:""}</div></div>${p.executiveSummary?`<div class="sec"><div class="sec-t">Executive Summary</div><div class="summary">${p.executiveSummary}</div></div>`:""}${comps?`<div class="sec"><div class="sec-t">Core Competencies</div><div class="tags">${comps}</div></div>`:""}${exp?`<div class="sec"><div class="sec-t">Leadership Experience</div>${exp}</div>`:""}${tr?`<div class="sec"><div class="sec-t">Training &amp; Advisory Expertise</div><div class="tags">${tr}</div>${p.trainingNarrative?`<p style="margin-top:8px;font-size:9.5pt;color:#333;line-height:1.6;">${p.trainingNarrative}</p>`:""}</div>`:""}${ach?`<div class="sec"><div class="sec-t">Key Achievements</div><ul>${ach}</ul></div>`:""}<div class="two-col">${edu?`<div class="sec"><div class="sec-t">Education</div><ul>${edu}</ul></div>`:""}${aw?`<div class="sec"><div class="sec-t">Awards &amp; Recognition</div><ul>${aw}</ul></div>`:""}</div>${pub?`<div class="sec"><div class="sec-t">Publications &amp; Research</div><ul>${pub}</ul></div>`:""}<div class="footer"><span>${BRAND} · Confidential Expert Dossier</span><span>Expert Profile – ${p.name}</span></div></div><script>window.onload=function(){window.print();}<\/script></body></html>`;
+}
+</script>
+</body>
+</html>
